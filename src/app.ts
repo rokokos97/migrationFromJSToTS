@@ -1,10 +1,41 @@
+type ID = number | string
+interface ITodo {
+  userId: ID
+  id: ID
+  title: string
+  completed: boolean
+}
+interface IUser {
+  id: ID
+  name: string
+  username?: string
+  email?: string
+  address?: {
+    street: string
+    suit: string
+    city: string
+    zipcode: string
+    geo: {
+      lat: string
+      lng: string
+    }
+  }
+  phone?: string
+  website?:string
+  company?: {
+    name: string
+    catchPhrase: string
+    bs: string
+  }
+}
+
 (function() {
   // Globals
   const todoList = document.getElementById('todo-list');
   const userSelect = document.getElementById('user-todo');
   const form = document.querySelector('form');
-  let todos = [];
-  let users = [];
+  let todos:ITodo[] = [];
+  let users:IUser[] = [];
 
   // Attach Events
   document.addEventListener('DOMContentLoaded', initApp);
