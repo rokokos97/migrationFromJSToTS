@@ -1,4 +1,6 @@
+// створю тип для ID так як він може бути і рядком і числом
 type ID = number | string
+// створюю два очевидні інтерфейси для Користувача і Задач
 interface ITodo {
   userId: ID
   id: ID
@@ -39,17 +41,20 @@ interface IUser {
 
   // Attach Events
   document.addEventListener('DOMContentLoaded', initApp);
-  form.addEventListener('submit', handleSubmit);
+  // додаємо перевірку чи є форма взагалі перед тим я повісити на неї подію
+  form?.addEventListener('submit', handleSubmit);
 
   // Basic Logic
   function getUserName(userId:ID) {
     const user = users.find((u) => u.id === userId);
-    return user.name;
+    // через те що теоретично користувача може не бути то додаю перевірку і додатково повернемо порожній рядок в разі якщо User не виявиться
+    return user?.name || "";
   }
   function printTodo({ id, userId, title, completed }:ITodo) {
     const li = document.createElement('li');
     li.className = 'todo-item';
-    li.dataset.id = id;
+    // оскільки ID може бути числом або рядком потрібно явно вказати що тут ID буде рядком
+    li.dataset.id = String(id);
     li.innerHTML = `<span>${title} <i>by</i> <b>${getUserName(
       userId
     )}</b></span>`;
@@ -66,26 +71,37 @@ interface IUser {
 
     li.prepend(status);
     li.append(close);
-
-    todoList.prepend(li);
+    // додаємо перевірку на наявність Задач
+    todoList?.prepend(li);
   }
 
   function createUserOption(user: IUser) {
-    const option = document.createElement('option');
-    option.value = user.id;
-    option.innerText = user.name;
-
-    userSelect.append(option);
+    // весь блок огортаємо в перевірку чи існує userSelect
+    if (userSelect){
+      const option = document.createElement('option');
+      // знову явно перетворюємо user.id на рядок як вимагається
+      option.value = String(user.id);
+      option.innerText = user.name;
+  
+      userSelect.append(option);
+    }
   }
 
   function removeTodo(todoId: ID) {
-    todos = todos.filter((todo:ITodo) => todo.id !== todoId);
+    // перевіряємо наявність todos. Весь блок огортаємо в if
+    if(todos){
+      todos = todos.filter((todo:ITodo) => todo.id !== todoId);
+  
+      const todo = todoList?.querySelector(`[data-id="${todoId}"]`);
+      if(todo){
+        todo.querySelector('input')?.removeEventListener('change', handleTodoChange);
+        todo.querySelector('.close')?.removeEventListener('click', handleClose);
+    
+        todo.remove();
 
-    const todo = todoList.querySelector(`[data-id="${todoId}"]`);
-    todo.querySelector('input').removeEventListener('change', handleTodoChange);
-    todo.querySelector('.close').removeEventListener('click', handleClose);
+      }
 
-    todo.remove();
+    }
   }
 
   function alertError(error: Error) {
@@ -102,24 +118,36 @@ interface IUser {
       users.forEach((user) => createUserOption(user));
     });
   }
-  function handleSubmit(event) {
+  function handleSubmit(event: Event) {
     event.preventDefault();
-
-    createTodo({
-      userId: Number(form.user.value),
-      title: form.todo.value,
-      completed: false,
-    });
+    // перевіряємо наявність  form огортаючи блок в if
+    if(form){
+      createTodo({
+        userId: Number(form.user.value),
+        title: form.todo.value,
+        completed: false,
+      });
+    }
   }
-  function handleTodoChange() {
-    const todoId = this.parentElement.dataset.id;
-    const completed = this.checked;
+  // явно вказуємо this
+  function handleTodoChange(this:HTMLInputElement) {
+    const parent = this.parentElement
+    if(parent){
+      const todoId = this.parentElement?.dataset.id;
+      const completed = this.checked;
+      // тут все одно треба додати додаткову перевірку todoId
+      todoId && toggleTodoComplete(todoId, completed);
 
-    toggleTodoComplete(todoId, completed);
+    }
   }
-  function handleClose() {
-    const todoId = this.parentElement.dataset.id;
-    deleteTodo(todoId);
+  function handleClose(this: HTMLSpanElement) {
+    // повторюємо попередній випадок з додатковою перевіркою на наявність спан елементу
+    const parant = this.parentElement
+    
+    if(parant){
+      const todoId = this.parentElement?.dataset.id;
+      todoId && deleteTodo(todoId);
+    }
   }
 
   // Async logic
@@ -132,7 +160,9 @@ interface IUser {
 
       return data;
     } catch (error) {
-      alertError(error);
+// перевіряємо чи є error інстасем глобального обєкта Error
+      if(error instanceof Error)
+        alertError(error);
     }
   }
 
@@ -145,11 +175,13 @@ interface IUser {
 
       return data;
     } catch (error) {
-      alertError(error);
+// перевіряємо чи є error інстасем глобального обєкта Error
+      if(error instanceof Error)
+        alertError(error);
     }
   }
-
-  async function createTodo(todo:ITodo) {
+  // Так як до створення ми не маємо інфо про id просто виключимо його з інтерфейсу ITodo
+  async function createTodo(todo:Omit<ITodo, 'id'>) {
     try {
       const response = await fetch(
         'https://jsonplaceholder.typicode.com/todos',
@@ -166,7 +198,9 @@ interface IUser {
 
       printTodo(newTodo);
     } catch (error) {
-      alertError(error);
+// перевіряємо чи є error інстасем глобального обєкта Error
+      if(error instanceof Error)
+        alertError(error);
     }
   }
 
@@ -187,7 +221,9 @@ interface IUser {
         throw new Error('Failed to connect with the server! Please try later.');
       }
     } catch (error) {
-      alertError(error);
+// перевіряємо чи є error інстасем глобального обєкта Error
+      if(error instanceof Error)
+        alertError(error);
     }
   }
 
@@ -209,7 +245,9 @@ interface IUser {
         throw new Error('Failed to connect with the server! Please try later.');
       }
     } catch (error) {
-      alertError(error);
+      if(error instanceof Error)
+      // перевіряємо чи є error інстасем глобального обєкта Error
+        alertError(error);
     }
   }
 })()
