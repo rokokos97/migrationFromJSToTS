@@ -151,7 +151,8 @@ interface IUser {
   }
 
   // Async logic
-  async function getAllTodos() {
+  // доаємо типізацію для результата викоанання функції. Функція getAllTodos має повернути проміс з массивом todo
+  async function getAllTodos():Promise<ITodo[]> {
     try {
       const response = await fetch(
         'https://jsonplaceholder.typicode.com/todos?_limit=15'
@@ -164,9 +165,11 @@ interface IUser {
       if(error instanceof Error)
         alertError(error);
     }
+    // аби позбавитись помилки в разі її винекнення повернемо порожній массив
+    return []
   }
-
-  async function getAllUsers() {
+// доаємо типізацію для результата викоанання функції. Функція getAllUsers має повернути проміс з массивом users
+  async function getAllUsers():Promise<IUser[]> {
     try {
       const response = await fetch(
         'https://jsonplaceholder.typicode.com/users?_limit=5'
@@ -179,6 +182,8 @@ interface IUser {
       if(error instanceof Error)
         alertError(error);
     }
+    // аби позбавитись помилки в разі її винекнення повернемо порожній массив
+    return []
   }
   // Так як до створення ми не маємо інфо про id просто виключимо його з інтерфейсу ITodo
   async function createTodo(todo:Omit<ITodo, 'id'>) {
