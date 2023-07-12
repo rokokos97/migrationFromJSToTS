@@ -1,4 +1,4 @@
-// створю тип для ID так як він може бути і рядком і числом
+// створю тип для ID, бо він може бути й рядком і числом
 type ID = number | string
 // створюю два очевидні інтерфейси для Користувача і Задач
 interface ITodo {
@@ -82,21 +82,21 @@ interface IUser {
       // знову явно перетворюємо user.id на рядок як вимагається
       option.value = String(user.id);
       option.innerText = user.name;
-  
+
       userSelect.append(option);
     }
   }
 
   function removeTodo(todoId: ID) {
-    // перевіряємо наявність todos. Весь блок огортаємо в if
+    // Перевіряємо наявність todos. Весь блок огортаємо в if
     if(todos){
       todos = todos.filter((todo:ITodo) => todo.id !== todoId);
-  
+
       const todo = todoList?.querySelector(`[data-id="${todoId}"]`);
       if(todo){
         todo.querySelector('input')?.removeEventListener('change', handleTodoChange);
         todo.querySelector('.close')?.removeEventListener('click', handleClose);
-    
+
         todo.remove();
 
       }
@@ -120,7 +120,7 @@ interface IUser {
   }
   function handleSubmit(event: Event) {
     event.preventDefault();
-    // перевіряємо наявність  form огортаючи блок в if
+    // перевіряємо наявність form огортаючи блок в if
     if(form){
       createTodo({
         userId: Number(form.user.value),
@@ -143,7 +143,7 @@ interface IUser {
   function handleClose(this: HTMLSpanElement) {
     // повторюємо попередній випадок з додатковою перевіркою на наявність спан елементу
     const parant = this.parentElement
-    
+
     if(parant){
       const todoId = this.parentElement?.dataset.id;
       todoId && deleteTodo(todoId);
@@ -157,35 +157,31 @@ interface IUser {
       const response = await fetch(
         'https://jsonplaceholder.typicode.com/todos?_limit=15'
       );
-      const data = await response.json();
-
-      return data;
+      return await response.json();
     } catch (error) {
-// перевіряємо чи є error інстасем глобального обєкта Error
+// перевіряємо чи є error інстансем глобального об'єкта Error
       if(error instanceof Error)
         alertError(error);
     }
-    // аби позбавитись помилки в разі її винекнення повернемо порожній массив
+    // аби позбавитись помилки в разі її виникнення повернемо порожній массив
     return []
   }
-// доаємо типізацію для результата викоанання функції. Функція getAllUsers має повернути проміс з массивом users
+// Доаємо типізацію для результата виконання функції. Функція getAllUsers має повернути проміс з массивом users
   async function getAllUsers():Promise<IUser[]> {
     try {
       const response = await fetch(
         'https://jsonplaceholder.typicode.com/users?_limit=5'
       );
-      const data = await response.json();
-
-      return data;
+      return await response.json();
     } catch (error) {
-// перевіряємо чи є error інстасем глобального обєкта Error
+// перевіряємо чи є error інстансем глобального об'єкта Error
       if(error instanceof Error)
         alertError(error);
     }
     // аби позбавитись помилки в разі її винекнення повернемо порожній массив
     return []
   }
-  // Так як до створення ми не маємо інфо про id просто виключимо його з інтерфейсу ITodo
+  // До створення ми не маємо інфо про id просто виключимо його з інтерфейсу ITodo
   async function createTodo(todo:Omit<ITodo, 'id'>) {
     try {
       const response = await fetch(
@@ -203,7 +199,7 @@ interface IUser {
 
       printTodo(newTodo);
     } catch (error) {
-// перевіряємо чи є error інстасем глобального обєкта Error
+// перевіряємо чи є error інстасем глобального об'єкта Error
       if(error instanceof Error)
         alertError(error);
     }
@@ -226,7 +222,7 @@ interface IUser {
         throw new Error('Failed to connect with the server! Please try later.');
       }
     } catch (error) {
-// перевіряємо чи є error інстасем глобального обєкта Error
+// перевіряємо чи є error інстасем глобального об'єкта Error
       if(error instanceof Error)
         alertError(error);
     }
@@ -251,7 +247,7 @@ interface IUser {
       }
     } catch (error) {
       if(error instanceof Error)
-      // перевіряємо чи є error інстасем глобального обєкта Error
+      // перевіряємо чи є error інстасем глобального зкщоб'єкта Error
         alertError(error);
     }
   }
