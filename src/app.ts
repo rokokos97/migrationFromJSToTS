@@ -42,11 +42,11 @@ interface IUser {
   form.addEventListener('submit', handleSubmit);
 
   // Basic Logic
-  function getUserName(userId) {
+  function getUserName(userId:ID) {
     const user = users.find((u) => u.id === userId);
     return user.name;
   }
-  function printTodo({ id, userId, title, completed }) {
+  function printTodo({ id, userId, title, completed }:ITodo) {
     const li = document.createElement('li');
     li.className = 'todo-item';
     li.dataset.id = id;
@@ -70,7 +70,7 @@ interface IUser {
     todoList.prepend(li);
   }
 
-  function createUserOption(user) {
+  function createUserOption(user: IUser) {
     const option = document.createElement('option');
     option.value = user.id;
     option.innerText = user.name;
@@ -78,8 +78,8 @@ interface IUser {
     userSelect.append(option);
   }
 
-  function removeTodo(todoId) {
-    todos = todos.filter((todo) => todo.id !== todoId);
+  function removeTodo(todoId: ID) {
+    todos = todos.filter((todo:ITodo) => todo.id !== todoId);
 
     const todo = todoList.querySelector(`[data-id="${todoId}"]`);
     todo.querySelector('input').removeEventListener('change', handleTodoChange);
@@ -88,7 +88,7 @@ interface IUser {
     todo.remove();
   }
 
-  function alertError(error) {
+  function alertError(error: Error) {
     alert(error.message);
   }
 
@@ -149,7 +149,7 @@ interface IUser {
     }
   }
 
-  async function createTodo(todo) {
+  async function createTodo(todo:ITodo) {
     try {
       const response = await fetch(
         'https://jsonplaceholder.typicode.com/todos',
@@ -170,7 +170,7 @@ interface IUser {
     }
   }
 
-  async function toggleTodoComplete(todoId, completed) {
+  async function toggleTodoComplete(todoId:ID, completed:boolean) {
     try {
       const response = await fetch(
         `https://jsonplaceholder.typicode.com/todos/${todoId}`,
@@ -191,7 +191,7 @@ interface IUser {
     }
   }
 
-  async function deleteTodo(todoId) {
+  async function deleteTodo(todoId:ID) {
     try {
       const response = await fetch(
         `https://jsonplaceholder.typicode.com/todos/${todoId}`,
